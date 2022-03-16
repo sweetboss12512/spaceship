@@ -1,2 +1,6 @@
 local sign = GetPartFromPort(1, "Sign")
-sign:Configure({SignText = "Hello"}
+local keyboard = GetPartFromPort(2, "Keyboard")
+
+keyboard:Connect("SimulateKeyPress", function(inputstring)
+	sign:Configure({SignText = inputstring})
+end)
