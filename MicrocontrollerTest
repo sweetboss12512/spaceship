@@ -1,0 +1,2 @@
+local sign = GetPartFromPort(1, "Sign")
+sign:Configure({SignText = "Hello"}
