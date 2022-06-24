@@ -1,0 +1,61 @@
+local Screen = GetPartFromPort(1,"Screen")
+
+local ResourceTable = {}
+
+local labelProperties = {
+	TextScaled = true,
+	Text = "",
+	Font = Enum.Font.SciFi,
+	BackgroundColor3 = Color3.fromRGB(17, 17, 17),
+	TextColor3 = Color3.fromRGB(255,255,255),
+	BorderColor3 = Color3.fromRGB(0,0,255),
+	BorderSizePixel = 5
+}
+
+local gridProperties = {
+	SortOrder = Enum.SortOrder.Name,
+	CellPadding = UDim2.new(0,1,0.1,0),
+	FillDirection = Enum.FillDirection.Vertical,
+	CellSize = UDim2.new(0,100,0,100)
+}
+
+function setupScreen()
+	Screen:ClearElements()
+	Screen:CreateElement("UIGridLayout",gridProperties)
+end
+
+function addLabel()
+	local label = Screen:CreateElement("TextLabel",labelProperties)
+	
+	return label
+end
+
+function insertResources()
+	table.clear(ResourceTable)
+	local Bins = GetPartsFromPort(2,"Bin")
+	
+	for _, bin in pairs(Bins) do
+		if ResourceTable[bin:GetResource()] then
+			ResourceTable[bin:GetResource()] += bin:GetAmount()
+		else
+			ResourceTable[bin:GetResource()] = bin:GetAmount()
+		end
+	end
+end
+
+function typingEffect(label,text)
+	for i = 1,#text,1 do
+		label.Text = string.sub(text,1,i)
+		wait(0.1)
+	end
+end
+
+while wait(1) do
+	insertResources()
+	setupScreen()
+	wait(.5)
+	for resource, resourceNum in pairs(ResourceTable) do
+		local label = addLabel()
+		typingEffect(label,resource..": "..resourceNum)
+	end
+end
