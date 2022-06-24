@@ -15,25 +15,39 @@ local labelProperties = {
 local gridProperties = {
 	SortOrder = Enum.SortOrder.Name,
 	CellPadding = UDim2.new(.1, 1, .1, 1),
-	FillDirection = Enum.FillDirection.Vertical,
+	FillDirection = Enum.FillDirection.Horizontal,
+	StartCorner = Enum.StartCorner.TopLeft,
+	HorizontalAlignment = Enum.HorizontalAlignment.Center,
+	VerticalAlignment = Enum.VerticalAlignment.Center,
 	CellSize = UDim2.new(0,100,0,100)
 }
 
 function setupScreen()
 	Screen:ClearElements()
-	Screen:CreateElement("UIGridLayout", gridProperties)
+	local frame = Screen:CreateElement("ScrollingFrame", {
+		BackgroundTransparency = 1,
+		AnchorPoint = Vector2.new(.5, .5),
+		Position = UDim2.new(.5, 0, .5, 0),
+		Size = UDim2.new(0, 400, 0, 400)
+	})
+
+	local gridLayout = Screen:CreateElement("UIGridLayout", gridProperties)
+
+	frame:AddChild(gridLayout)
+
+	return frame
 end
 
 function addLabel()
 	local label = Screen:CreateElement("TextLabel", labelProperties)
-	
+
 	return label
 end
 
 function insertResources()
 	table.clear(ResourceTable)
 	local Bins = GetPartsFromPort(2,"Bin")
-	
+
 	for _, bin in pairs(Bins) do
 		if ResourceTable[bin:GetResource()] then
 			ResourceTable[bin:GetResource()] += bin:GetAmount()
@@ -52,11 +66,11 @@ end
 
 while wait(1) do
 	insertResources()
-	setupScreen()
+	local mainFrame = setupScreen()
 	task.wait(.5)
 	for resource, resourceNum in pairs(ResourceTable) do
 		local label = addLabel()
-		
+		mainFrame:AddChild(label)
 		typingEffect(label,resource..": "..resourceNum)
 	end
 end
